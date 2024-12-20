@@ -1,0 +1,10 @@
+name: 1989 Checker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  checker:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello"
