@@ -1,13 +1,11 @@
-name: Playwright Tests
+name: "1989 Checker"
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ main, master ]
-  # pull_request:
-  #   branches: [ main, master ]
+  schedule:
+    - cron: '0 */2 * * *'
 jobs:
-  test:
-    timeout-minutes: 60
+  checker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
