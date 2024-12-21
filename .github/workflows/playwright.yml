@@ -11,23 +11,64 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+        cache: 'npm'
+
     - name: Install dependencies
       run: npm ci
+
+    - name: Get Playwright version
+      run: echo ::set-env name=PLAYWRIGHT_VERSION::$(npx playwright --version | awk '{print $2}')
+
+    - name: Cache Playwright
+      uses: actions/cache@v4
+      id: cache-playwright
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ env.PLAYWRIGHT_VERSION }}
+
     - name: Install Playwright Browsers
+      if: steps.cache-playwright.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps chromium
+      
     - name: Run Playwright tests
       run: npx playwright test
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: playwright-report/
-        retention-days: 30
+        retention-days: 2
+
+    - name: Run Comparator
+      run: tsx ./comparator.ts
+
+    - name: Check if New Tickets are available
+      id: check-new-tickets
+      run: |
+        echo "Checking if new Tickets are available"
+        if [ -f "new-tickets.html" ]; then
+          # Set Action step output to true
+          echo "::set-output name=new-tickets::true"
+        else
+          echo "::set-output name=new-tickets::false"
+        fi
+
+    - name: Commit Changes
+      if: steps.check-new-tickets.outputs.new-tickets == 'true'
+      run: |
+        git config --global user.email "bot@github.com"
+        git config --global user.name "GitHub Bot"
+        git add tickets.json
+        git commit -m "chore: Update tickets.json" || true
+        git push origin HEAD:main || true
 
     - name: Send Email
+      if: steps.check-new-tickets.outputs.new-tickets == 'true'
       uses: dawidd6/action-send-mail@v4
       with:
         server_address: smtp.gmail.com
@@ -40,15 +81,15 @@ jobs:
         # Optional (recommended) mail server password:
         password: ${{secrets.MAIL_PASSWORD}}
         # Required mail subject:
-        subject: Github Actions job result
+        subject: "1989 - Bilety"
         # Required recipients' addresses:
         to: ${{secrets.MAIL_USER}}
         # Required sender full name (address can be skipped):
         from: ${{secrets.MAIL_USER}}
         # Optional plain body:
-        body: Build job of ${{github.repository}} completed successfully!
+        # body: Build job of ${{github.repository}} completed successfully!
         # Optional HTML body read from file:
-        # html_body: file://README.html
+        html_body: file://new-tickets.html
         # # Optional carbon copy recipients:
         # cc: kyloren@example.com,leia@example.com
         # # Optional blind carbon copy recipients:

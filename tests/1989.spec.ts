@@ -1,5 +1,6 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import { writeFile } from 'fs/promises'
+import { toLocaleDateString } from '../utils';
 
 const monthNames = [
     'Styczeń',
@@ -74,15 +75,6 @@ test('Check Dates', async ({ page }) => {
         availableDates.push({ date, ticketsLink });
     }
 
-  if (availableDates.length === 0) {
-    console.log('No tickets available');
-    return;
-  }
-
   availableDates.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-  const options:Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' };
-  console.log('tickets available for', availableDates.map(({ date }) => date.toLocaleDateString('pl-PL', options)));
-
-  await writeFile('tickets.json', JSON.stringify(availableDates, null, 2));
+  await writeFile('new-tickets.json', JSON.stringify(availableDates, null, 2));
 });

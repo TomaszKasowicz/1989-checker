@@ -8,6 +8,10 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.49.1",
-    "@types/node": "^22.10.2"
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8"
   }
 }
