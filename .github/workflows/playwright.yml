@@ -45,7 +45,7 @@ jobs:
         retention-days: 2
 
     - name: Run Comparator
-      run: tsx ./comparator.ts
+      run: npx tsx ./comparator.ts
 
     - name: Check if New Tickets are available
       id: check-new-tickets
