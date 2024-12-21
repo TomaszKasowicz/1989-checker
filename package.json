@@ -1,0 +1,13 @@
+{
+  "name": "1989-checker",
+  "version": "0.0.1",
+  "description": "1989 Checker",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2"
+  }
+}
