@@ -1,12 +1,19 @@
-import tickets from './tickets.json';
-import newTickets from './new-tickets.json';
 import handlebars from 'handlebars';
 import { toLocaleDateString } from './utils';
-import { writeFileSync, renameSync } from 'fs'
-type Ticket = {
-    date: string;
-    ticketsLink: string;
-}
+import { writeFileSync, renameSync } from 'fs';
+import { AvailableDate } from './tests/model';
+
+import ticketsJSON from './tickets.json';
+import newTicketsJSON from './new-tickets.json';
+
+const tickets: AvailableDate[] = ticketsJSON.map(ticket => ({
+  ...ticket,
+  date: new Date(ticket.date),
+}));
+const newTickets: AvailableDate[] = newTicketsJSON.map(ticket => ({
+  ...ticket,
+  date: new Date(ticket.date),
+}));
 
 const htmlTemplate = `
 <!DOCTYPE html>
@@ -22,7 +29,12 @@ const htmlTemplate = `
     <ul>
         {{#each tickets}}
         <li>
-            <a href="{{ticketsLink}}">{{date}}</a>
+            {{#if href}}
+                <a href="{{href}}">{{date}} - {{time}}</a>
+            {{/if}}
+            {{#if reservation}}
+                {{date}} - {{time}} - {{reservation}}
+            {{/if}}
         </li>
         {{/each}}
     </ul>
@@ -32,21 +44,30 @@ const htmlTemplate = `
 
 const template = handlebars.compile(htmlTemplate);
 
-const filterOutOnlyNewTicketsBasedOnTickets = (tickets: Ticket[], newTickets: Ticket[]) => {
-    return newTickets.filter(newTicket => {
-        return !tickets.some(ticket => ticket.date === newTicket.date);
-    });
-}
+const filterOutOnlyNewTicketsBasedOnTickets = (
+  tickets: AvailableDate[],
+  newTickets: AvailableDate[],
+) => {
+  return newTickets.filter(newTicket => {
+    return !tickets.some(ticket => ticket.date === newTicket.date);
+  });
+};
 
-const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(tickets, newTickets);
+const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(
+  tickets,
+  newTickets,
+);
 
 if (newTicketsOnly.length === 0) {
-    console.log('No new tickets available');
-    process.exit(0);
+  console.log('No new tickets available');
+  process.exit(0);
 }
 
 // Write new tickets to console
-const ticketsToHtml = newTicketsOnly.map(ticket => ({...ticket, date: toLocaleDateString(ticket.date)}));
+const ticketsToHtml = newTicketsOnly.map(ticket => ({
+  ...ticket,
+  date: toLocaleDateString(ticket.date),
+}));
 console.log('New tickets available:');
 console.table(ticketsToHtml);
 
