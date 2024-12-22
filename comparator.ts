@@ -1,12 +1,12 @@
-import tickets from './tickets.json';
-import newTickets from './new-tickets.json';
-import handlebars from 'handlebars';
-import { toLocaleDateString } from './utils';
-import { writeFileSync, renameSync } from 'fs'
+import tickets from "./tickets.json";
+import newTickets from "./new-tickets.json";
+import handlebars from "handlebars";
+import { toLocaleDateString } from "./utils";
+import { writeFileSync, renameSync } from "fs";
 type Ticket = {
-    date: string;
-    ticketsLink: string;
-}
+  date: string;
+  ticketsLink: string;
+};
 
 const htmlTemplate = `
 <!DOCTYPE html>
@@ -32,28 +32,37 @@ const htmlTemplate = `
 
 const template = handlebars.compile(htmlTemplate);
 
-const filterOutOnlyNewTicketsBasedOnTickets = (tickets: Ticket[], newTickets: Ticket[]) => {
-    return newTickets.filter(newTicket => {
-        return !tickets.some(ticket => ticket.date === newTicket.date);
-    });
-}
+const filterOutOnlyNewTicketsBasedOnTickets = (
+  tickets: Ticket[],
+  newTickets: Ticket[],
+) => {
+  return newTickets.filter(newTicket => {
+    return !tickets.some(ticket => ticket.date === newTicket.date);
+  });
+};
 
-const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(tickets, newTickets);
+const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(
+  tickets,
+  newTickets,
+);
 
 if (newTicketsOnly.length === 0) {
-    console.log('No new tickets available');
-    process.exit(0);
+  console.log("No new tickets available");
+  process.exit(0);
 }
 
 // Write new tickets to console
-const ticketsToHtml = newTicketsOnly.map(ticket => ({...ticket, date: toLocaleDateString(ticket.date)}));
-console.log('New tickets available:');
+const ticketsToHtml = newTicketsOnly.map(ticket => ({
+  ...ticket,
+  date: toLocaleDateString(ticket.date),
+}));
+console.log("New tickets available:");
 console.table(ticketsToHtml);
 
 // Write new tickets to HTML
 const html = template({ tickets: ticketsToHtml });
-writeFileSync('new-tickets.html', html);
+writeFileSync("new-tickets.html", html);
 
 // Store tickets for future comparison
-renameSync('new-tickets.json', 'tickets.json');
-console.log('Tickets stored for future comparison');
+renameSync("new-tickets.json", "tickets.json");
+console.log("Tickets stored for future comparison");
