@@ -1,53 +1,22 @@
 import { test, expect, Page, Locator } from '@playwright/test';
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'fs/promises';
 import { toLocaleDateString } from '../utils';
+import { ShowsPageObject } from './shows.po';
 
-const monthNames = [
-    'Styczeń',
-    'Luty',
-    'Marzec',
-    'Kwiecień',
-    'Maj',
-    'Czerwiec',
-    'Lipiec',
-    'Sierpień',
-    'Wrzesień',
-    'Październik',
-    'Listopad',
-    'Grudzień'
-];
+type AvailableDate = {
+  date: Date;
+  time: string;
+  href?: string;
+  reservation?: string;
+};
 
-class ShowsPageObject {
-  
-  readonly showsLocator = this.page.locator('div.show-more-container.spektakle.wrapper');
-  readonly dayWrapLocator = this.showsLocator.locator('div.day-wrap');
-  readonly spinnerLocator = this.page.locator('div.spinner');
-  
-  readonly ticketsLink = (dayWrap: Locator) => dayWrap.getByRole('link', { name: 'Bilet do teatru' });
-  
-  constructor(private readonly page: Page) {}
+let showsPage: ShowsPageObject;
 
-  async open() {
-    await this.page.goto('https://teatrwkrakowie.pl/repertuar');
-  }
-
-  async selectShow() {
-    await this.page.getByRole('link', { name: 'Wybierz spektakl' }).click();
-    await this.page.locator('a').filter({ hasText: /^1989$/ }).click();
-  }
-
-  async getDayFor(dayWrap: Locator) {
-    const text =  await dayWrap.locator('div.day').innerText();
-    const [day, monthAndYear] = text.split('\n');
-    const [month, year] = monthAndYear.split(' ');
-    const monthIndex = monthNames.indexOf(month);
-    return new Date(parseInt(year), monthIndex, parseInt(day));
-  }
-}
-
+test.beforeEach(async ({ page }) => {
+  showsPage = new ShowsPageObject(page);
+});
 
 test('Check Dates', async ({ page }) => {
-  const showsPage = new ShowsPageObject(page);
   await showsPage.open();
   await showsPage.selectShow();
 
@@ -61,20 +30,64 @@ test('Check Dates', async ({ page }) => {
     return;
   }
 
-  const availableDates = [];
-  for (let i=0; i<count; i++) {
-    const dayWrapLocator = showsPage.dayWrapLocator.nth(i);
-    if (!await showsPage.ticketsLink(dayWrapLocator).isVisible()) {
-        continue;
-    }
-
-    const ticketsLink = await showsPage.ticketsLink(dayWrapLocator).getAttribute('href');
-    const date = await showsPage.getDayFor(dayWrapLocator);
-
-        // TODO: Add Icons
-        availableDates.push({ date, ticketsLink });
-    }
+  const availableDates = await collectDayData();
 
   availableDates.sort((a, b) => a.date.getTime() - b.date.getTime());
   await writeFile('new-tickets.json', JSON.stringify(availableDates, null, 2));
+
+  console.log('Available dates:');
+  console.table(
+    availableDates.map(d => ({ ...d, date: toLocaleDateString(d.date) })),
+  );
 });
+
+async function collectDayData() {
+  const dayWraps = await showsPage.dayWrapLocator.all();
+
+  const availableDates: AvailableDate[] = [];
+  for (const dayWrap of dayWraps) {
+    const availableTimes = await collectTimeData(dayWrap);
+    if (availableTimes.length === 0) {
+      continue;
+    }
+
+    const date = await showsPage.getDayFor(dayWrap);
+
+    availableTimes.forEach(time => {
+      availableDates.push({
+        date,
+        ...time,
+      });
+    });
+  }
+  return availableDates;
+}
+
+async function collectTimeData(dayWrap: Locator) {
+  const ticketsLocator = showsPage.ticketsLocator(dayWrap);
+  const times = await showsPage.timeLocator(dayWrap).all();
+  const availableTimes = [];
+  for (const timeLocator of times) {
+    await timeLocator.click();
+    const time = (await timeLocator.innerText()).trim();
+    const ticketOption = showsPage.ticketOption(ticketsLocator);
+
+    const ticketOptionText = await ticketOption.innerText();
+    if (ticketOptionText.includes('Rezerwacje')) {
+      availableTimes.push({
+        time,
+        reservation: ticketOptionText.trim(),
+      });
+    }
+
+    const ticketsLink = showsPage.ticketsLink(ticketOption);
+    if (await ticketsLink.isVisible()) {
+      const href = (await ticketsLink.getAttribute('href')) ?? undefined;
+      availableTimes.push({
+        time,
+        href,
+      });
+    }
+  }
+  return availableTimes;
+}
