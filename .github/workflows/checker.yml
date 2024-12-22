@@ -1,13 +1,12 @@
-name: Playwright Tests
+name: "1989 Checker"
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ main, master ]
-  # pull_request:
-  #   branches: [ main, master ]
+  schedule:
+    - cron: '0 */2 * * *'
+
 jobs:
-  test:
-    timeout-minutes: 60
+  checker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -21,7 +20,7 @@ jobs:
       run: npm ci
 
     - name: Get Playwright version
-      run: echo ::set-env name=PLAYWRIGHT_VERSION::$(npx playwright --version | awk '{print $2}')
+      run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_ENV
 
     - name: Cache Playwright
       uses: actions/cache@v4
@@ -45,17 +44,16 @@ jobs:
         retention-days: 2
 
     - name: Run Comparator
-      run: tsx ./comparator.ts
+      run: npx tsx ./comparator.ts
 
     - name: Check if New Tickets are available
       id: check-new-tickets
       run: |
         echo "Checking if new Tickets are available"
         if [ -f "new-tickets.html" ]; then
-          # Set Action step output to true
-          echo "::set-output name=new-tickets::true"
+          echo "new-tickets=true" >> "$GITHUB_OUTPUT"
         else
-          echo "::set-output name=new-tickets::false"
+          echo "new-tickets=false" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Commit Changes
@@ -93,7 +91,7 @@ jobs:
         # # Optional carbon copy recipients:
         # cc: kyloren@example.com,leia@example.com
         # # Optional blind carbon copy recipients:
-        # bcc: r2d2@example.com,hansolo@example.com
+        bcc: ${{ vars.MAIL_BCC_LIST }} || ''
         # Optional recipient of the email response:
         # reply_to: luke@example.com
         # Optional Message ID this message is replying to:
