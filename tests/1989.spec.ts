@@ -1,14 +1,8 @@
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { writeFile } from 'fs/promises';
 import { toLocaleDateString } from '../utils';
 import { ShowsPageObject } from './shows.po';
-
-type AvailableDate = {
-  date: Date;
-  time: string;
-  href?: string;
-  reservation?: string;
-};
+import { AvailableDate } from './model';
 
 let showsPage: ShowsPageObject;
 
@@ -32,7 +26,16 @@ test('Check Dates', async ({ page }) => {
 
   const availableDates = await collectDayData();
 
-  availableDates.sort((a, b) => a.date.getTime() - b.date.getTime());
+  // sort available dates by date and time
+  availableDates.sort((a, b) => {
+    if (a.date < b.date) {
+      return -1;
+    }
+    if (a.date > b.date) {
+      return 1;
+    }
+    return a.time.localeCompare(b.time);
+  });
   await writeFile('new-tickets.json', JSON.stringify(availableDates, null, 2));
 
   console.log('Available dates:');
