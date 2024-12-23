@@ -15,6 +15,11 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+      
     - uses: actions/checkout@v4
 
     - uses: actions/setup-node@v4
@@ -97,7 +102,7 @@ jobs:
         # # Optional carbon copy recipients:
         # cc: kyloren@example.com,leia@example.com
         # # Optional blind carbon copy recipients:
-        bcc: ${{ env.BCC && vars.MAIL_BCC_LIST || '' }}
+        bcc: ${{ env.BCC == 'true' && vars.MAIL_BCC_LIST || '' }}
         # Optional recipient of the email response:
         # reply_to: luke@example.com
         # Optional Message ID this message is replying to:
