@@ -49,6 +49,8 @@ export class ShowsPageObject {
     const [day, monthAndYear] = text.split("\n");
     const [month, year] = monthAndYear.split(" ");
     const monthIndex = monthNames.indexOf(month);
-    return new Date(parseInt(year), monthIndex, parseInt(day));
+    const paddedMonth =
+      monthIndex < 9 ? `0${monthIndex + 1}` : `${monthIndex + 1}`;
+    return `${year}-${paddedMonth}-${day}`;
   }
 }

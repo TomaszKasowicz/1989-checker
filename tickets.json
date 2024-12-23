@@ -1,17 +1,14 @@
 [
   {
-    "date": "2025-03-06T00:00:00.000Z",
-    "time": "19:00",
+    "date": "2025-03-06T19:00:00.000Z",
     "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-03-06-19-00"
   },
   {
-    "date": "2025-03-07T00:00:00.000Z",
-    "time": "12:00",
+    "date": "2025-03-07T12:00:00.000Z",
     "reservation": "Rezerwacje\n12 424 45 25 /12 424 45 28/wt.pt 10-14"
   },
   {
-    "date": "2025-03-07T00:00:00.000Z",
-    "time": "19:00",
+    "date": "2025-03-07T19:00:00.000Z",
     "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-03-07-19-00"
   }
 ]

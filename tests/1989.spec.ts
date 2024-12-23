@@ -26,16 +26,9 @@ test('Check Dates', async ({ page }) => {
 
   const availableDates = await collectDayData();
 
-  // sort available dates by date and time
-  availableDates.sort((a, b) => {
-    if (a.date < b.date) {
-      return -1;
-    }
-    if (a.date > b.date) {
-      return 1;
-    }
-    return a.time.localeCompare(b.time);
-  });
+  // sort available dates by date which is a javascript Date object
+  availableDates.sort((a, b) => a.date.getTime() - b.date.getTime());
+
   await writeFile('new-tickets.json', JSON.stringify(availableDates, null, 2));
 
   console.log('Available dates:');
@@ -56,10 +49,12 @@ async function collectDayData() {
 
     const date = await showsPage.getDayFor(dayWrap);
 
-    availableTimes.forEach(time => {
+    availableTimes.forEach(timeData => {
+      const { time, ...rest } = timeData;
+      console.log(date, time, `${date}T${time}Z`);
       availableDates.push({
-        date,
-        ...time,
+        date: new Date(`${date}T${time}Z`), // ISO 8601 format
+        ...rest,
       });
     });
   }

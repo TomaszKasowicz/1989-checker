@@ -1,6 +1,6 @@
 import handlebars from 'handlebars';
-import { toLocaleDateString } from './utils';
-import { writeFileSync, renameSync } from 'fs';
+import { toFullHour, toLocaleDateString } from './utils';
+import { writeFileSync } from 'fs';
 import { AvailableDate } from './tests/model';
 
 import ticketsJSON from './tickets.json';
@@ -47,11 +47,10 @@ const template = handlebars.compile(htmlTemplate);
 const filterOutOnlyNewTicketsBasedOnTickets = (
   tickets: AvailableDate[],
   newTickets: AvailableDate[],
-) => {
-  return newTickets.filter(newTicket => {
-    return !tickets.some(ticket => ticket.date === newTicket.date);
-  });
-};
+) =>
+  newTickets.filter(
+    nT => !tickets.some(t => t.date.getTime() === nT.date.getTime()),
+  );
 
 const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(
   tickets,
@@ -67,6 +66,7 @@ if (newTicketsOnly.length === 0) {
 const ticketsToHtml = newTicketsOnly.map(ticket => ({
   ...ticket,
   date: toLocaleDateString(ticket.date),
+  time: toFullHour(ticket.date),
 }));
 console.log('New tickets available:');
 console.table(ticketsToHtml);
@@ -74,7 +74,3 @@ console.table(ticketsToHtml);
 // Write new tickets to HTML
 const html = template({ tickets: ticketsToHtml });
 writeFileSync('new-tickets.html', html);
-
-// Store tickets for future comparison
-renameSync('new-tickets.json', 'tickets.json');
-console.log('Tickets stored for future comparison');
