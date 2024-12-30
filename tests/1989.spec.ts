@@ -70,11 +70,14 @@ async function collectTimeData(dayWrap: Locator) {
     const time = (await timeLocator.innerText()).trim();
     const ticketOption = showsPage.ticketOption(ticketsLocator);
 
+    // Collect repertoire-icons
+    const icons = await collectReportoireIcons(dayWrap);
     const ticketOptionText = await ticketOption.innerText();
     if (ticketOptionText.includes('Rezerwacje')) {
       availableTimes.push({
         time,
         reservation: ticketOptionText.trim(),
+        icons,
       });
     }
 
@@ -84,8 +87,24 @@ async function collectTimeData(dayWrap: Locator) {
       availableTimes.push({
         time,
         href,
+        icons,
       });
     }
   }
   return availableTimes;
+}
+
+async function collectReportoireIcons(dayWrap: Locator) {
+  const columnWrap = showsPage.columnWrapLocator(dayWrap);
+  const repertoireIconsWrapper = showsPage.repertoireIconsWrapper(columnWrap);
+  const repertoireIcons = await showsPage
+    .repertoireIcons(repertoireIconsWrapper)
+    .all();
+
+  const icons = [];
+  for (const repertoireIcon of repertoireIcons) {
+    const icon = await repertoireIcon.getAttribute('data-tooltip');
+    icons.push(icon);
+  }
+  return icons;
 }

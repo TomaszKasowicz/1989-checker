@@ -1,10 +1,14 @@
-import handlebars from 'handlebars';
-import { toFullHour, toLocaleDateString } from './utils';
+import {
+  filterOutOnlyNewTicketsBasedOnTickets,
+  toFullHour,
+  toLocaleDateString,
+} from './utils';
 import { writeFileSync } from 'fs';
 import { AvailableDate } from './tests/model';
 
 import ticketsJSON from './tickets.json';
 import newTicketsJSON from './new-tickets.json';
+import { template } from './template';
 
 const tickets: AvailableDate[] = ticketsJSON.map(ticket => ({
   ...ticket,
@@ -14,43 +18,6 @@ const newTickets: AvailableDate[] = newTicketsJSON.map(ticket => ({
   ...ticket,
   date: new Date(ticket.date),
 }));
-
-const htmlTemplate = `
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nowe bilety</title>
-</head>
-<body>
-    <h1>Nowe bilety na spektakl 1989 </h1>
-    <ul>
-        {{#each tickets}}
-        <li>
-            {{#if href}}
-                <a href="{{href}}">{{date}} - {{time}}</a>
-            {{/if}}
-            {{#if reservation}}
-                {{date}} - {{time}} - {{reservation}}
-            {{/if}}
-        </li>
-        {{/each}}
-    </ul>
-</body>
-</html>
-`;
-
-const template = handlebars.compile(htmlTemplate);
-
-const filterOutOnlyNewTicketsBasedOnTickets = (
-  tickets: AvailableDate[],
-  newTickets: AvailableDate[],
-) =>
-  newTickets.filter(
-    nT => !tickets.some(t => t.date.getTime() === nT.date.getTime()),
-  );
 
 const newTicketsOnly = filterOutOnlyNewTicketsBasedOnTickets(
   tickets,

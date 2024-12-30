@@ -20,3 +20,12 @@ export function toFullHour(date: string | Date) {
   };
   return new Date(date).toLocaleTimeString('pl-PL', options);
 }
+
+export function filterOutOnlyNewTicketsBasedOnTickets(
+  tickets: { date: Date }[],
+  newTickets: { date: Date }[],
+) {
+  return newTickets.filter(
+    nT => !tickets.some(t => t.date.getTime() === nT.date.getTime()),
+  );
+}
