@@ -36,8 +36,20 @@ const ticketsToHtml = newTicketsOnly.map(ticket => ({
   time: toFullHour(ticket.date),
 }));
 console.log('New tickets available:');
-console.table(ticketsToHtml);
+console.table(ticketsToHtml, ['date', 'time', 'href', 'reservation', 'icons']);
 
 // Write new tickets to HTML
 const html = template({ tickets: ticketsToHtml });
 writeFileSync('new-tickets.html', html);
+
+// Merge tickets and new tickets
+const allTickets = tickets.concat(newTickets);
+
+// Remove duplicates
+const uniqueTickets = allTickets.filter(
+  (ticket, index, self) =>
+    index === self.findIndex(t => t.date.getTime() === ticket.date.getTime()),
+);
+
+// Write unique tickets to JSON
+writeFileSync('tickets.json', JSON.stringify(uniqueTickets, null, 2));
