@@ -1,0 +1,22 @@
+name: PAT Checker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pat-checker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        token: ${{ secrets.PAT }}
+
+    - name: Test Commit and Push
+      run: |
+        git config --global user.email "bot@github.com"
+        git config --global user.name "GitHub Bot"
+        echo "new line" >> test.txt
+        git add test.txt
+        git commit -m "test: add new line" || true
+        git push origin HEAD:main || true
