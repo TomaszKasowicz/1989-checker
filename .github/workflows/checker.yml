@@ -78,7 +78,7 @@ jobs:
 
     - name: Send Email
       if: steps.check-new-tickets.outputs.new-tickets == 'true'
-      uses: dawidd6/action-send-mail@v4
+      uses: dawidd6/action-send-mail@611879133a9569642c41be66f4a323286e9b8a3b # v4
       with:
         server_address: smtp.gmail.com
         # Server port, default 25:
