@@ -40,6 +40,10 @@ export class ShowsPageObject {
   readonly ticketsLink = (ticketOption: Locator) =>
     ticketOption.getByRole('link', { name: 'Bilet do teatru' });
 
+  readonly spectacleSelector = this.page.getByRole('link', { name: 'Wybierz spektakl' })
+  
+  readonly showLink = this.page.locator('a').filter({ hasText: /^1989$/ });
+
   constructor(private readonly page: Page) {}
 
   async open() {
@@ -47,11 +51,15 @@ export class ShowsPageObject {
   }
 
   async selectShow() {
-    await this.page.getByRole('link', { name: 'Wybierz spektakl' }).click();
-    await this.page
-      .locator('a')
-      .filter({ hasText: /^1989$/ })
-      .click();
+    await this.spectacleSelector.click();
+    try {
+      await this.showLink.waitFor({ timeout: 5000 });
+    } catch (e) {
+      console.error('Show link not found');
+      return false;
+    }
+    await this.showLink.click();
+    return true;
   }
 
   async getDayFor(dayWrap: Locator) {
