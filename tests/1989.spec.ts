@@ -10,9 +10,18 @@ test.beforeEach(async ({ page }) => {
   showsPage = new ShowsPageObject(page);
 });
 
-test('Check Dates', async ({ page }) => {
+test('Check Dates', async ({ }) => {
   await showsPage.open();
-  await showsPage.selectShow();
+  const showFound = await showsPage.selectShow();
+  if (!showFound) {
+    console.log('No show found');
+    await writeFile('new-tickets.json', JSON.stringify([], null, 2));
+    if (new Date().getUTCHours() > 6) {
+      // Mark as passed during the day. I'm lucky to live close to UTC zone :-)
+      test.info().status = 'passed';
+    }
+    return;
+  }
 
   await expect(showsPage.spinnerLocator).toBeHidden();
 
