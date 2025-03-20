@@ -14,11 +14,16 @@ test('Check Dates', async ({ }) => {
   await showsPage.open();
   const showFound = await showsPage.selectShow();
   if (!showFound) {
-    console.log('No show found');
+    const date = new Date();
+    console.log('No show found. Current Date is ', date.toUTCString(), date.getUTCHours());
     await writeFile('new-tickets.json', JSON.stringify([], null, 2));
-    if (new Date().getUTCHours() > 6) {
+    if (date.getUTCHours() > 6) {
+      console.log('Mark as passed during the day');
       // Mark as passed during the day. I'm lucky to live close to UTC zone :-)
       test.info().status = 'passed';
+    } else {
+      console.log('Mark as failed at night');
+      test.info().status = 'failed';
     }
     return;
   }
