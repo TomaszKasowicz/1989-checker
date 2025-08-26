@@ -6,7 +6,7 @@ on:
         type: boolean
         default: true
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '*/30 * * * *'
 
 env:
   BCC: ${{ vars.ENABLE_BCC == '1' || inputs.enable-bcc || false }}
