@@ -45,5 +45,30 @@
     "icons": [
       "pętla indukcyjna"
     ]
+  },
+  {
+    "date": "2025-11-19T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-11-19-19-00",
+    "icons": []
+  },
+  {
+    "date": "2025-11-20T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-11-20-19-00",
+    "icons": []
+  },
+  {
+    "date": "2025-11-21T12:00:00.000Z",
+    "reservation": "Rezerwacje\n12 424 45 25 /12 424 45 28/wt.pt 10-16",
+    "icons": []
+  },
+  {
+    "date": "2025-11-21T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-11-21-19-00",
+    "icons": []
+  },
+  {
+    "date": "2025-11-22T12:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2025-11-22-12-00",
+    "icons": []
   }
 ]
