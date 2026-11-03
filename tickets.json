@@ -213,5 +213,30 @@
     "date": "2026-12-19T19:00:00.000Z",
     "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2026-12-19-19-00",
     "icons": []
+  },
+  {
+    "date": "2027-02-02T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2027-02-02-19-00",
+    "icons": []
+  },
+  {
+    "date": "2027-02-03T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2027-02-03-19-00",
+    "icons": []
+  },
+  {
+    "date": "2027-02-04T12:00:00.000Z",
+    "reservation": "Rezerwacje\n12 424 45 25 /12 424 45 28/pn.pt 10-16",
+    "icons": []
+  },
+  {
+    "date": "2027-02-04T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2027-02-04-19-00",
+    "icons": []
+  },
+  {
+    "date": "2027-02-05T11:00:00.000Z",
+    "reservation": "Rezerwacje\n12 424 45 25 /12 424 45 28/pn.pt 10-16",
+    "icons": []
   }
 ]
