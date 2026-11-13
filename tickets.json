@@ -238,5 +238,10 @@
     "date": "2027-02-05T11:00:00.000Z",
     "reservation": "Rezerwacje\n12 424 45 25 /12 424 45 28/pn.pt 10-16",
     "icons": []
+  },
+  {
+    "date": "2026-12-17T19:00:00.000Z",
+    "href": "https://bilety.teatrwkrakowie.pl/kup-bilet/1989-2026-12-17-19-00",
+    "icons": []
   }
 ]
